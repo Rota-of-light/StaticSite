@@ -47,3 +47,49 @@ def extract_markdown_links(text):
         link_tuple = (link_info[i], link_url[i],)
         extracted_list.append(link_tuple)
     return extracted_list
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type != "text":
+            new_nodes.append(node)
+            continue
+        extracted_text = node.text
+        extracted_image = extract_markdown_images(extracted_text)
+        if len(extracted_image) == 0:
+            new_nodes.append(node)
+            continue
+        for image_text, image_url in extracted_image:
+            sections = extracted_text.split(f"![{image_text}]({image_url})", 1)
+            if len(sections) != 2:
+                raise ValueError("Invalid attempt, issue with image text")
+            if sections[0] != "":
+                new_nodes.append(TextNode(sections[0], "text"))
+            new_nodes.append(TextNode(image_text, "image", image_url))
+            extracted_text = sections[1]
+        if extracted_text != "":
+            new_nodes.append(TextNode(extracted_text, "text"))
+    return new_nodes
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type != "text":
+            new_nodes.append(node)
+            continue
+        extracted_text = node.text
+        extracted_link = extract_markdown_links(extracted_text)
+        if len(extracted_link) == 0:
+            new_nodes.append(node)
+            continue
+        for link_text, link_url in extracted_link:
+            sections = extracted_text.split(f"[{link_text}]({link_url})", 1)
+            if len(sections) != 2:
+                raise ValueError("Invalid attempt, issue with link text")
+            if sections[0] != "":
+                new_nodes.append(TextNode(sections[0], "text"))
+            new_nodes.append(TextNode(link_text, "link", link_url))
+            extracted_text = sections[1]
+        if extracted_text != "":
+            new_nodes.append(TextNode(extracted_text, "text"))
+    return new_nodes
