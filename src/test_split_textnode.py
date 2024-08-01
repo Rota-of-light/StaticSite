@@ -5,6 +5,7 @@ from split_textnode import (
     extract_markdown_images,
     split_nodes_link,
     split_nodes_image,
+    text_to_textnodes
 )
 
 
@@ -188,6 +189,26 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode(" with text that follows", text_type_text),
             ],
             new_nodes,
+        )
+    
+    def test_text_to_textnodes(self):
+        result_nodes = text_to_textnodes("This is **text** with an *image* with some `code` and ![image](https://i.imgur.com/zjjcJKZ.png) and link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)")
+        self.assertListEqual(
+            [
+                TextNode("This is ", text_type_text),
+                TextNode("text", text_type_bold),
+                TextNode(" with an ", text_type_text),
+                TextNode("image", text_type_italic),
+                TextNode(" with some ", text_type_text),
+                TextNode("code", text_type_code),
+                TextNode(" and ", text_type_text),
+                TextNode("image", text_type_image, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(" and link ", text_type_text),
+                TextNode("to boot dev", text_type_link, "https://www.boot.dev"),
+                TextNode(" and ", text_type_text),
+                TextNode("to youtube", text_type_link, "https://www.youtube.com/@bootdotdev"),
+            ],
+            result_nodes
         )
 
 if __name__ == "__main__":
