@@ -119,4 +119,11 @@ def markdown_to_html_node(markdown):
         all_childern_list.append(node)
     return ParentNode("div", all_childern_list)
 
-
+def extract_title(markdown):
+    #if "\n" in markdown:
+    broken_lines = markdown.split("\n")
+    for line in broken_lines:
+        if re.search(r"^#\s.*", line):
+            return line.lstrip("#").strip()
+    raise Exception("No h1 header")
+                

@@ -36,6 +36,6 @@ def Static_to_Public(directory=None, full_source=None, full_dest=None, check=Fal
                 shutil.copy(new_item, dest)
             else:
                 Static_to_Public(directory=item, full_source=source, full_dest=dest, check=True)
+
 def checking():
     return os.getcwd()
-    
